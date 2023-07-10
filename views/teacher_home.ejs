@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Teacher Home</title>
+  <link rel="stylesheet" type="text/css" href="/css/teacher_home.css">
+
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+
+  
+</head>
+
+<body>
+  <div class="dark-mode-switch">
+    <input type="checkbox" id="darkModeToggle">
+    <label for="darkModeToggle">Dark Mode</label>
+  </div>
+
+  <!-- Navigation menu -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#">Teacher Home</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ml-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="/TeacherContact">Contact Us</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/teacher_home">Courses</a>
+          </li>
+          <li class="nav-item">
+            <form action="/logout" method="POST" style="margin-bottom: 0;">
+              <button class="nav-link button btn btn-success" type="submit">Logout</button>
+            </form>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+  <div id="navigation"></div>
+  
+  
+
+  <div class="container">
+    <h1>Welcome, <%= teacherName %></h1>
+
+    <input type="text" id="searchInput" placeholder="Search...">
+    <button id="searchBtn">Search</button>
+
+    <table id="coursesTable">
+      <thead>
+        <tr>
+          <th>Course Code</th>
+          <th>Course Name</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% courses.forEach((course) => { %>
+          <tr>
+            <td><%= course.code %></td>
+            <td><%= course.name %></td>
+            <td>
+              <a href="/course_details/<%= course.code %>" class="button">Course Details</a>
+            </td>
+          </tr>
+        <% }); %>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Bootstrap JS (optional) -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+  <script>
+
+    const darkModeToggle = document.getElementById('darkModeToggle');
+    const body = document.body;
+
+    darkModeToggle.addEventListener('change', () => {
+      body.classList.toggle('dark-mode', darkModeToggle.checked);
+    });
+        // Check if dark mode is enabled in the storage
+        const isDarkModeEnabled = localStorage.getItem('darkModeEnabled') === 'true';
+
+// Set initial dark mode state
+if (isDarkModeEnabled) {
+  body.classList.add('dark-mode');
+  darkModeToggle.checked = true;
+}
+
+// Toggle dark mode state
+darkModeToggle.addEventListener('change', function () {
+  const darkModeEnabled = darkModeToggle.checked;
+
+  // Update body class and storage based on the toggle state
+  if (darkModeEnabled) {
+    body.classList.add('dark-mode');
+    localStorage.setItem('darkModeEnabled', 'true');
+  } else {
+    body.classList.remove('dark-mode');
+    localStorage.setItem('darkModeEnabled', 'false');
+  }
+});
+    function tableSearch() {
+      var input, filter, table, tr, tdName, tdCode, txtValueName, txtValueCode;
+
+      // Initializing Variables
+      input = document.getElementById("searchInput");
+      filter = input.value.toUpperCase();
+      table = document.getElementById("coursesTable");
+      tr = table.getElementsByTagName("tr");
+
+      for (var i = 0; i < tr.length; i++) {
+        tdName = tr[i].getElementsByTagName("td")[1]; // Index 1 represents the second column (Course Name)
+        tdCode = tr[i].getElementsByTagName("td")[0]; // Index 0 represents the first column (Course Code)
+        if (tdName && tdCode) {
+          txtValueName = tdName.textContent || tdName.innerText;
+          txtValueCode = tdCode.textContent || tdCode.innerText;
+          if (
+            txtValueName.toUpperCase().indexOf(filter) > -1 ||
+            txtValueCode.toUpperCase().indexOf(filter) > -1
+          ) {
+            tr[i].style.display = ""; // Show matched rows
+          } else {
+            tr[i].style.display = "none"; // Hide non-matching rows
+          }
+        }
+      }
+    }
+
+    // Add click event listener to the Search button
+    document.getElementById('searchBtn').addEventListener('click', tableSearch);
+  </script>
+</body>
+</html>

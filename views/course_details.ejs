@@ -1,0 +1,201 @@
+<!-- course_details.ejs -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="stylesheet" type="text/css" href="/css/course_details.css">
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Course Details</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+ 
+
+
+</head>
+<body>
+  <div class="dark-mode-switch">
+    <input type="checkbox" id="darkModeToggle">
+    <label for="darkModeToggle">Dark Mode</label>
+  </div>
+  
+  <!-- Navigation menu -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#">Course details</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ml-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="/TeacherContact">Contact Us</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/teacher_home">Courses</a>
+          </li>
+          <li class="nav-item">
+            <form action="/logout" method="POST" style="margin-bottom: 0;">
+              <button class="nav-link button btn btn-success" type="submit">Logout</button>
+            </form>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+  <div id="navigation"></div>
+
+  <div class="container">
+    <h1>Course Details - <%= course.code %>: <%= course.name %></h1>
+
+    <input type="text" id="searchInput" placeholder="Search by name or ID">
+    <button id="searchBtn">Search</button>
+
+    <form action="/save_grades/<%= course.code %>" method="POST" id="gradesForm">
+      <div class="explanation">
+        <p>
+          This table displays the students enrolled in the course and their corresponding grades for lab and homework.
+          You can modify the grades by entering new values in the input fields. The changes will be automatically saved.
+        </p>
+      </div>
+      <table id="studentsTable">
+        <thead>
+          <tr>
+            <th>Student ID</th>
+            <th>Student Name</th>
+            <th>Lab Grade</th>
+            <th>Homework Grade</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% students.forEach((student) => {
+            const enrollment = enrollments.find(enrollment => enrollment.studentId === student.id);
+            const labGrade = enrollment ? enrollment.labGrades : '';
+            const homeworkGrade = enrollment ? enrollment.homeworkGrades : '';
+            console.log('Lab Grade:', labGrade);
+            console.log('Homework Grade:', homeworkGrade);
+          %>
+          <tr>
+            <td><%= student.id %></td>
+            <td><%= student.name %></td>
+            <td><input type="number" name="labGrade" id="labGrade_<%= student.id %>" data-student-id="<%= student.id %>" data-course-code="<%= course.code %>" value="<%= labGrade %>"></td>
+            <td><input type="number" name="homeworkGrade" id="homeworkGrade_<%= student.id %>" data-student-id="<%= student.id %>" data-course-code="<%= course.code %>" value="<%= homeworkGrade %>"></td>
+            <td><button class="save-button" data-student-id="<%= student.id %>">Save</button></td>
+          </tr>
+          <% }); %>
+        </tbody>
+      </table>
+      
+      
+    </form>
+
+    <div id="searchResult"></div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+  <script>
+
+    const darkModeToggle = document.getElementById('darkModeToggle');
+    const body = document.body;
+
+    darkModeToggle.addEventListener('change', () => {
+      body.classList.toggle('dark-mode', darkModeToggle.checked);
+    });
+        // Check if dark mode is enabled in the storage
+        const isDarkModeEnabled = localStorage.getItem('darkModeEnabled') === 'true';
+
+// Set initial dark mode state
+if (isDarkModeEnabled) {
+  body.classList.add('dark-mode');
+  darkModeToggle.checked = true;
+}
+
+  // Toggle dark mode state
+  darkModeToggle.addEventListener('change', function () {
+  const darkModeEnabled = darkModeToggle.checked;
+
+  // Update body class and storage based on the toggle state
+  if (darkModeEnabled) {
+    body.classList.add('dark-mode');
+    localStorage.setItem('darkModeEnabled', 'true');
+  } else {
+    body.classList.remove('dark-mode');
+    localStorage.setItem('darkModeEnabled', 'false');
+  }
+});
+    
+    document.addEventListener('DOMContentLoaded', () => {
+      const form = document.getElementById('gradesForm');
+
+      form.addEventListener('click', (event) => {
+        if (event.target.classList.contains('save-button')) {
+          event.preventDefault();
+
+          const button = event.target;
+          const studentId = button.dataset.studentId;
+          const labGradeInput = document.getElementById(`labGrade_${studentId}`);
+          const homeworkGradeInput = document.getElementById(`homeworkGrade_${studentId}`);
+          const labGrade = labGradeInput.value;
+          const homeworkGrade = homeworkGradeInput.value;
+
+          const grades = [
+            {
+              studentId: studentId,
+              labGrade: labGrade,
+              homeworkGrade: homeworkGrade
+            }
+          ];
+
+          // Send the grades to the server using AJAX
+          fetch(form.action, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(grades)
+          })
+            .then(response => {
+              if (response.ok) {
+                alert('Grades saved successfully.');
+              } else {
+                console.log('An error occurred while saving grades.');
+              }
+            })
+            .catch(error => {
+              console.error('An error occurred:', error);
+            });
+        }
+      });
+    });
+
+    function tableSearch() {
+      var input, filter, table, tr, tdName, tdCode, txtValueName, txtValueCode;
+
+      input = document.getElementById("searchInput");
+      filter = input.value.toUpperCase();
+      table = document.getElementById("studentsTable");
+      tr = table.getElementsByTagName("tr");
+
+      for (var i = 0; i < tr.length; i++) {
+        tdName = tr[i].getElementsByTagName("td")[1];
+        tdCode = tr[i].getElementsByTagName("td")[0];
+        if (tdName && tdCode) {
+          txtValueName = tdName.textContent || tdName.innerText;
+          txtValueCode = tdCode.textContent || tdCode.innerText;
+          if (
+            txtValueName.toUpperCase().indexOf(filter) > -1 ||
+            txtValueCode.toUpperCase().indexOf(filter) > -1
+          ) {
+            tr[i].style.display = "";
+          } else {
+            tr[i].style.display = "none";
+          }
+        }
+      }
+    }
+
+    document.getElementById("searchBtn").addEventListener("click", tableSearch);
+  </script>
+</body>
+</html>

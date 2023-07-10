@@ -1,0 +1,114 @@
+<!-- grades_distribution.ejs -->
+
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Grade Distribution</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" type="text/css" href="/css/grades_distribution.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+ 
+</head>
+<body>
+  <div class="dark-mode-switch">
+    <input type="checkbox" id="darkModeToggle">
+    <label for="darkModeToggle">Dark Mode</label>
+  </div>
+   <!-- Navigation menu -->
+   <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#">Grades distributions</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ml-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="/contact">Contact Us</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/student_home">Actions</a>
+          </li>
+          <li class="nav-item">
+            <form action="/logout" method="POST" style="margin-bottom: 0;">
+              <button class="nav-link button btn btn-success" type="submit">Logout</button>
+            </form>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+  <div id="navigation"></div>
+  <h1>Grade Distribution</h1>
+
+  <div class="chart-container">
+    <% for (let i = 0; i < distributions.length; i++) { %>
+      <div>
+        <h2><%= courseNames[i] %></h2>
+        <canvas id="chart-<%= i %>"></canvas>
+      </div>
+    <% } %>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+  <script>
+    const darkModeToggle = document.getElementById('darkModeToggle');
+    const body = document.body;
+
+    darkModeToggle.addEventListener('change', () => {
+      body.classList.toggle('dark-mode', darkModeToggle.checked);
+    });
+        // Check if dark mode is enabled in the storage
+        const isDarkModeEnabled = localStorage.getItem('darkModeEnabled') === 'true';
+
+// Set initial dark mode state
+if (isDarkModeEnabled) {
+  body.classList.add('dark-mode');
+  darkModeToggle.checked = true;
+}
+
+// Toggle dark mode state
+darkModeToggle.addEventListener('change', function () {
+  const darkModeEnabled = darkModeToggle.checked;
+
+  // Update body class and storage based on the toggle state
+  if (darkModeEnabled) {
+    body.classList.add('dark-mode');
+    localStorage.setItem('darkModeEnabled', 'true');
+  } else {
+    body.classList.remove('dark-mode');
+    localStorage.setItem('darkModeEnabled', 'false');
+  }
+});
+    // Prepare data for the charts
+    const distributions = JSON.parse('<%- JSON.stringify(distributions) %>');
+    const courseNames = '<%- JSON.stringify(courseNames) %>';
+
+    // Create charts for each course
+    for (let i = 0; i < distributions.length; i++) {
+      const chartId = `chart-${i}`;
+      const ctx = document.getElementById(chartId).getContext('2d');
+      new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: ['A', 'B', 'C', 'D', 'F'],
+          datasets: [{
+            label: 'Grades',
+            data: distributions[i],
+            backgroundColor: ['green', 'blue', 'yellow', 'orange', 'red']
+          }]
+        },
+        options: {
+          scales: {
+            y: {
+              beginAtZero: true,
+              stepSize: 1
+            }
+          }
+        }
+      });
+    }
+  </script>
+  <script src="script.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>View Enrolled Courses</title>
+  <link rel="stylesheet" type="text/css" href="/css/view_enrolled_courses.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+  
+</head>
+<body>
+  <!-- Navigation menu -->
+  <div class="dark-mode-switch">
+    <input type="checkbox" id="darkModeToggle">
+    <label for="darkModeToggle">Dark Mode</label>
+  </div>
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#">View your courses</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ml-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="/contact">Contact Us</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/student_home">Actions</a>
+          </li>
+          <li class="nav-item">
+            <form action="/logout" method="POST" style="margin-bottom: 0;">
+              <button class="nav-link button btn btn-success" type="submit">Logout</button>
+            </form>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+  <div id="navigation"></div>
+  <h1>View Enrolled Courses</h1>
+  <input type="text" id="searchInput" placeholder="Search by code or name">
+  <table id="coursesTable">
+    <thead>
+      <tr>
+        <th>Course Code</th>
+        <th>Course Name</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% for (let enrollment of enrolledCourses) { %>
+        <tr id="enrollment_<%= enrollment._id %>">
+          <td><%= enrollment.courseCode %></td>
+          <td><%= enrollment.courseName %></td>
+          <td>
+            <button class="delete-button" data-enrollment-id="<%= enrollment._id %>">Delete</button>
+          </td>
+        </tr>
+      <% } %>
+    </tbody>
+  </table>
+  <p class="no-courses hidden">No enrolled courses found.</p>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+  <script>
+    const darkModeToggle = document.getElementById('darkModeToggle');
+    const body = document.body;
+
+    darkModeToggle.addEventListener('change', () => {
+      body.classList.toggle('dark-mode', darkModeToggle.checked);
+    });
+        // Check if dark mode is enabled in the storage
+        const isDarkModeEnabled = localStorage.getItem('darkModeEnabled') === 'true';
+
+// Set initial dark mode state
+if (isDarkModeEnabled) {
+  body.classList.add('dark-mode');
+  darkModeToggle.checked = true;
+}
+
+// Toggle dark mode state
+darkModeToggle.addEventListener('change', function () {
+  const darkModeEnabled = darkModeToggle.checked;
+
+  // Update body class and storage based on the toggle state
+  if (darkModeEnabled) {
+    body.classList.add('dark-mode');
+    localStorage.setItem('darkModeEnabled', 'true');
+  } else {
+    body.classList.remove('dark-mode');
+    localStorage.setItem('darkModeEnabled', 'false');
+  }
+});
+    // JavaScript code for search functionality
+    function tableSearch() {
+      var input, filter, table, tr, tdCode, tdName, txtValueCode, txtValueName;
+
+      input = document.getElementById("searchInput");
+      filter = input.value.toUpperCase();
+      table = document.getElementById("coursesTable");
+      tr = table.getElementsByTagName("tr");
+      noCoursesMsg = document.querySelector('.no-courses');
+
+      for (var i = 0; i < tr.length; i++) {
+        tdCode = tr[i].getElementsByTagName("td")[0];
+        tdName = tr[i].getElementsByTagName("td")[1];
+        if (tdCode && tdName) {
+          txtValueCode = tdCode.textContent || tdCode.innerText;
+          txtValueName = tdName.textContent || tdName.innerText;
+          if (
+            txtValueCode.toUpperCase().indexOf(filter) > -1 ||
+            txtValueName.toUpperCase().indexOf(filter) > -1
+          ) {
+            tr[i].style.display = "";
+          } else {
+            tr[i].style.display = "none";
+          }
+        }
+      }
+
+      // Show or hide the "No enrolled courses found" message based on the search results
+      if (table.querySelectorAll('tbody tr[style="display: none;"]').length === tr.length - 1) {
+        noCoursesMsg.classList.remove('hidden');
+      } else {
+        noCoursesMsg.classList.add('hidden');
+      }
+    }
+
+    // Add event listener to the search input field
+    document.getElementById('searchInput').addEventListener('input', tableSearch);
+
+    // Add event listener to the delete buttons
+    const deleteButtons = document.getElementsByClassName('delete-button');
+    Array.from(deleteButtons).forEach((button) => {
+      button.addEventListener('click', (event) => {
+        const enrollmentId = event.target.dataset.enrollmentId;
+        deleteEnrollment(enrollmentId);
+      });
+    });
+
+    // JavaScript code for deleting an enrollment and updating the table
+    function deleteEnrollment(enrollmentId) {
+      // Send a DELETE request to the server to delete the enrollment
+      fetch(`/delete_enrollment/${enrollmentId}`, {
+        method: 'POST',
+      })
+        .then((response) => {
+          if (response.ok) {
+            // Enrollment deleted successfully
+            return response.json();
+          } else {
+            // Handle the error case
+            throw new Error('Failed to delete enrollment.');
+          }
+        })
+        .then((data) => {
+          // Check if the enrollment was found
+          if (data.success) {
+            // Find the row with the corresponding enrollmentId and remove it from the table
+            const row = document.getElementById(`enrollment_${enrollmentId}`);
+            if (row) {
+              row.remove();
+            }
+          } else {
+            // Handle the case when enrollment is not found
+            throw new Error('Enrollment not found.');
+          }
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    }
+  </script>
+</body>
+</html>
