@@ -1,0 +1,89 @@
+[{
+  "_id": {
+    "$oid": "646f2298cc23c216b35de3b5"
+  },
+  "id": "1",
+  "name": "Amne",
+  "password": "11",
+  "role": "student",
+  "courses": [],
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "647714805681e16ea3f5713b"
+  },
+  "id": "2",
+  "name": "Qamar",
+  "password": "555",
+  "role": "student",
+  "courses": [
+    ""
+  ]
+},
+{
+  "_id": {
+    "$oid": "64956c537ff0b37bfb493583"
+  },
+  "id": "3",
+  "name": "MOHAMMAD SALAMA",
+  "password": "888",
+  "role": "student",
+  "courses": [],
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "64956fae604e3866ee7f8065"
+  },
+  "id": "4",
+  "name": "suhel",
+  "password": "44",
+  "role": "student",
+  "courses": [],
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "649583749ea8bd7303f6c3ad"
+  },
+  "id": "5",
+  "name": "Haa",
+  "password": "99",
+  "role": "student",
+  "courses": [],
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "64970af4e123f9671e7fbb6f"
+  },
+  "id": "6",
+  "name": "AMIN",
+  "password": "123456",
+  "role": "student",
+  "courses": [],
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "64aec3595df75a86f1ad30fa"
+  },
+  "id": "123",
+  "name": "yosef",
+  "password": "yy",
+  "role": "student",
+  "courses": [],
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "64aec4575df75a86f1ad3127"
+  },
+  "id": "206520801",
+  "name": "Amirshh",
+  "password": "1234",
+  "role": "student",
+  "courses": [],
+  "__v": 0
+}]

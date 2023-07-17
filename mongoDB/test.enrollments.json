@@ -1,0 +1,39 @@
+[{
+  "_id": {
+    "$oid": "6480d97711bab0cc3c2b94c7"
+  },
+  "courseId": "11",
+  "studentId": "2",
+  "labGrades": 10,
+  "homeworkGrades": 20
+},
+{
+  "_id": {
+    "$oid": "648af8e067686ad8bc999b95"
+  },
+  "courseId": "11",
+  "studentId": "1",
+  "labGrades": 10,
+  "homeworkGrades": 15,
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "64aec3b25df75a86f1ad3109"
+  },
+  "courseId": "11",
+  "studentId": "123",
+  "labGrades": null,
+  "homeworkGrades": null,
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "64aec3b55df75a86f1ad310e"
+  },
+  "courseId": "22",
+  "studentId": "123",
+  "labGrades": null,
+  "homeworkGrades": null,
+  "__v": 0
+}]

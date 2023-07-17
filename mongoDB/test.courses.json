@@ -1,0 +1,16 @@
+[{
+  "_id": {
+    "$oid": "646e249bed956208f43123d2"
+  },
+  "code": "11",
+  "name": "algorithms",
+  "teacherId": "1"
+},
+{
+  "_id": {
+    "$oid": "646e251fed956208f43123d3"
+  },
+  "code": "22",
+  "name": "logic",
+  "teacherId": "1"
+}]
